@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  receiver-service:
+    build: ./receiver-service
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://receiver-db:27017/receiver_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - receiver-db
+      - redis
+
+  listener-service:
+    build: ./listener-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://listener-db:27017/listener_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - listener-db
+      - redis
+
+  receiver-db:
+    image: mongo:latest
+    container_name: receiver-db
+    ports:
+      - "27017:27017"
+
+  listener-db:
+    image: mongo:latest
+    container_name: listener-db
+    ports:
+      - "27018:27017"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
